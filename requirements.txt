@@ -4,5 +4,6 @@ aiogram==3.19.0
 aiohttp
 gspread
 oauth2client
+python-dotenv
 
 
