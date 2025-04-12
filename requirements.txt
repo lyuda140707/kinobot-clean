@@ -1,0 +1,8 @@
+fastapi==0.115.0
+uvicorn==0.34.0
+aiogram==3.19.0
+aiohttp
+gspread
+oauth2client
+
+
