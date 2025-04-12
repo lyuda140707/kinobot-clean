@@ -213,6 +213,10 @@ async def on_startup():
 async def on_shutdown():
     await bot.delete_webhook()
 
+@app.get("/ping")
+async def ping():
+    return {"status": "pong", "uptime": "working 🟢"}
+    
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
     uvicorn.run("app:app", host="0.0.0.0", port=port)
