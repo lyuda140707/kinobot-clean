@@ -137,8 +137,8 @@ async def menu_handler(message: types.Message):
 
 @dp.message(F.text == "Пошук🔍")
 @dp.message(Command("poisk"))
-async def search_handler(message: types.Message):
-    await message.reply("Функція пошуку.")
+async def prompt_search(message: types.Message):
+    await message.answer("🔎 Введіть назву фільму або серіалу для пошуку:")
 
 @dp.message(F.text == "Список серіалів")
 @dp.message(Command("serialiv"))
@@ -176,6 +176,25 @@ async def check_user(message: types.Message):
         await message.answer("❌ Щоб користуватись ботом, підпишіться на групу:", reply_markup=subscribe_kb)
         return
     await message.reply("ℹ️ Невідома команда. Використовуйте меню або кнопки.")
+    
+    @dp.message()
+async def handle_search(message: types.Message):
+    query = message.text.strip().lower()
+    results = []
+
+    for row in data:
+        title = row.get("Назва", "").lower()
+        description = row.get("Опис", "")
+        link = row.get("Посилання", "")
+
+        if query in title:
+            results.append(f"🎬 *{row.get('Назва')}*\n📝 {description}\n🔗 [Дивитись]({link})")
+
+    if results:
+        await message.answer("\n\n".join(results), parse_mode="Markdown")
+    else:
+        await message.answer("❌ Нічого не знайдено. Спробуйте інший запит.")
+
 
 @app.post("/sendpulse-webhook")
 async def sendpulse_webhook_handler(request: Request):
