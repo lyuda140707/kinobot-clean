@@ -203,7 +203,7 @@ async def root():
 async def telegram_webhook(update: dict):
     telegram_update = Update(**update)
     await dp.feed_update(bot, telegram_update)
-    return {"ok": True"}
+    return {"ok": True}
 
 @app.on_event("startup")
 async def on_startup():
