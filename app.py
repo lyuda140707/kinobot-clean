@@ -10,15 +10,27 @@ from aiogram.types import TelegramObject, InlineKeyboardMarkup, InlineKeyboardBu
 from aiogram.dispatcher.middlewares.base import BaseMiddleware
 from aiogram.filters import Command
 from aiogram.fsm.storage.memory import MemoryStorage
+from dotenv import load_dotenv
+load_dotenv()
+
+print("🔍 BOT_TOKEN:", os.getenv("BOT_TOKEN"))  # Додано для перевірки
 
 # 📎 Google Sheets
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
-# 🔐 Авторизація до Google Таблиць
-creds_file = 'kinobot-456610-4b925092fe36.json'
+# 🔐 Авторизація до Google Таблиць через змінну середовища
+import json
+from io import StringIO
+
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-creds = ServiceAccountCredentials.from_json_keyfile_name(creds_file, scope)
+json_str = os.getenv("GOOGLE_SHEETS_CREDENTIALS_JSON")
+
+if not json_str:
+    raise Exception("❌ Змінна GOOGLE_SHEETS_CREDENTIALS_JSON не знайдена!")
+
+creds_dict = json.loads(json_str)
+creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
 gs_client = gspread.authorize(creds)
 
 # 📄 Підключення до таблиці
