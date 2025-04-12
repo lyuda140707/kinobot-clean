@@ -4,7 +4,6 @@ import uvicorn
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from typing import Callable, Dict, Any, Awaitable
-
 from aiogram import Bot, Dispatcher, types, F
 from aiogram.types import TelegramObject, InlineKeyboardMarkup, InlineKeyboardButton, Update, ReplyKeyboardMarkup, KeyboardButton
 from aiogram.dispatcher.middlewares.base import BaseMiddleware
@@ -61,16 +60,6 @@ logging.basicConfig(level=logging.INFO)
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(storage=MemoryStorage())
 app = FastAPI()
-
-# Після імпорту:
-creds_file = 'kinobot-456610-4b925092fe36.json'
-scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-creds = ServiceAccountCredentials.from_json_keyfile_name(creds_file, scope)
-gs_client = gspread.authorize(creds)
-
-spreadsheet_id = '1pJU_6N3zyhRCdVfCPXD5RvHAvwVp0v71rKpvhpS3PC8'
-sheet = gs_client.open_by_key(spreadsheet_id).worksheet("Лист1")
-data = sheet.get_all_records()
 
 # Клавіатура
 subscribe_kb = InlineKeyboardMarkup(inline_keyboard=[
