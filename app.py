@@ -14,6 +14,7 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import json
 from io import StringIO
+from aiogram.types import Update
 
 load_dotenv()
 print("🔍 BOT_TOKEN:", os.getenv("BOT_TOKEN"))
@@ -193,6 +194,12 @@ async def get_chat_id(message: types.Message):
         f"🆔 Chat ID: `{message.chat.id}`\n📌 Тип: {message.chat.type}\n📛 Назва: {message.chat.title}",
         parse_mode="Markdown"
     )
+
+@app.post("/")
+async def telegram_webhook(update: dict):
+    telegram_update = Update(**update)
+    await dp.feed_update(bot, telegram_update)
+    return {"ok": True}
 
 @app.on_event("startup")
 async def on_startup():
