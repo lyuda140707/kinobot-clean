@@ -83,7 +83,7 @@ dp.message.middleware(SubscriptionMiddleware())
 # Обробники залишаються як було...
 # ...
 
-@app.post("/telegram-webhook")
+@app.post("/webhook")
 async def telegram_webhook(update: dict):
     telegram_update = Update(**update)
     await dp.feed_update(bot, telegram_update)
@@ -99,8 +99,8 @@ async def ping():
 
 @app.on_event("startup")
 async def on_startup():
-    await bot.set_webhook(WEBHOOK_URL + "/telegram-webhook", drop_pending_updates=True)
-    logging.info(f"🔔 Webhook set to: {WEBHOOK_URL}/telegram-webhook")
+    await bot.set_webhook(WEBHOOK_URL, drop_pending_updates=True)
+    logging.info(f"🔔 Webhook set to: {WEBHOOK_URL}")
 
 @app.on_event("shutdown")
 async def on_shutdown():
