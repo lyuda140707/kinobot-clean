@@ -195,11 +195,15 @@ async def get_chat_id(message: types.Message):
         parse_mode="Markdown"
     )
 
+@app.get("/")
+async def root():
+    return {"status": "OK"}
+
 @app.post("/")
 async def telegram_webhook(update: dict):
     telegram_update = Update(**update)
     await dp.feed_update(bot, telegram_update)
-    return {"ok": True}
+    return {"ok": True"}
 
 @app.on_event("startup")
 async def on_startup():
@@ -208,10 +212,6 @@ async def on_startup():
 @app.on_event("shutdown")
 async def on_shutdown():
     await bot.delete_webhook()
-
-@app.get("/")
-async def root():
-    return {"status": "OK"}
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
