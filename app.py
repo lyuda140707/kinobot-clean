@@ -177,7 +177,7 @@ async def check_user(message: types.Message):
         return
     await message.reply("ℹ️ Невідома команда. Використовуйте меню або кнопки.")
     
-    @dp.message()
+@dp.message()
 async def handle_search(message: types.Message):
     query = message.text.strip().lower()
     results = []
