@@ -78,6 +78,7 @@ dp.message.middleware(SubscriptionMiddleware())
 
 @dp.message(Command("start"))
 async def send_welcome(message: types.Message):
+    logging.info(f"👋 /start від @{message.from_user.username} ({message.from_user.id})")
     if await check_subscription(message.from_user.id):
         await message.answer("✅ Ви підписані! Ласкаво просимо до бота!\nОбирай жанр, або натисни «Меню» 👇", reply_markup=main_menu)
     else:
@@ -107,6 +108,7 @@ async def menu_handler(message: types.Message):
 @dp.message(F.text == "Пошук🔍")
 @dp.message(Command("poisk"))
 async def prompt_search(message: types.Message):
+    logging.info(f"🔍 Користувач {message.from_user.id} натиснув кнопку 'Пошук'")
     await message.answer("🔎 Введіть назву фільму або серіалу для пошуку:")
 
 @dp.message(F.text == "Список серіалів")
@@ -144,6 +146,10 @@ async def universal_handler(message: types.Message):
     if not await check_subscription(message.from_user.id):
         await message.answer("❌ Щоб користуватись ботом, підпишіться на групу:", reply_markup=subscribe_kb)
         return
+
+    query = message.text.strip().lower()
+    logging.info(f"🔎 Користувач @{message.from_user.username} ({message.from_user.id}) шукає: {query}")
+    results = []
 
     query = message.text.strip().lower()
     results = []
