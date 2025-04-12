@@ -45,7 +45,11 @@ WEBHOOK_URL = os.getenv("WEBHOOK_URL")
 GROUP_CHAT_ID = '-1002649275599'
 GROUP_URL = 'https://t.me/KinoTochkaUA'
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    handlers=[logging.StreamHandler()]
+)
 
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(storage=MemoryStorage())
