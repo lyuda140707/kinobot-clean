@@ -99,10 +99,12 @@ async def search_logic(message: types.Message):
         await message.answer("\n\n".join(matches), parse_mode="Markdown")
     else:
         await message.answer("❌ Нічого не знайдено")
-
+        
 @app.post("/webhook")
 async def telegram_webhook(update: dict):
-    logging.info(f"📩 Отримано update від Telegram: {update}")
+    logging.info("✅ Webhook endpoint отримав update!")
+    logging.info("📩 Вхідний update: %s", update)
+
     telegram_update = Update(**update)
     await dp.feed_update(bot, telegram_update)
     return {"ok": True}
