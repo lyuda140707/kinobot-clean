@@ -13,7 +13,6 @@ from dotenv import load_dotenv
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import json
-
 from collections import defaultdict
 
 # 🌐 Load env vars
@@ -114,7 +113,27 @@ async def search_logic(message: types.Message):
             link = item.get("Посилання", "")
             msg_parts.append(f"📺 {ep} — [{desc}]({link})")
         await message.answer("\n".join(msg_parts), parse_mode="Markdown")
-        
+
+@dp.message(F.text == "Список серіалів📺")
+async def serials_handler(message: types.Message):
+    await message.answer("📺 Список серіалів поки що готується...")
+
+@dp.message(F.text == "За жанром")
+async def genres_handler(message: types.Message):
+    await message.answer("📂 Обери жанр зі списку...")
+
+@dp.message(F.text == "Мультики👧")
+async def cartoons_handler(message: types.Message):
+    await message.answer("🎞 Тут зібрані мультики для дітей і дорослих")
+
+@dp.message(F.text == "Фільми")
+async def movies_handler(message: types.Message):
+    await message.answer("🎬 Вибрані фільми з бази")
+
+@dp.message(F.text == "Запросити друга🍜🍻")
+async def invite_handler(message: types.Message):
+    await message.answer("🐒 Поділись ботом з другом: https://t.me/KinoTochka24_bot")
+
 @app.post("/webhook")
 async def telegram_webhook(update: dict):
     logging.info("✅ Webhook endpoint отримав update!")
