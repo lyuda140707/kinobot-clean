@@ -102,6 +102,7 @@ async def search_logic(message: types.Message):
 
 @app.post("/webhook")
 async def telegram_webhook(update: dict):
+    logging.info(f"📩 Отримано update від Telegram: {update}")
     telegram_update = Update(**update)
     await dp.feed_update(bot, telegram_update)
     return {"ok": True}
