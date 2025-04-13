@@ -13,7 +13,6 @@ from dotenv import load_dotenv
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import json
-from collections import defaultdict
 
 # 🌐 Load env vars
 load_dotenv()
@@ -87,53 +86,18 @@ async def cmd_start(message: types.Message):
 async def search_prompt(message: types.Message):
     await message.answer("🔎 Введіть назву...")
 
-@dp.message()
+dp.message()
 async def search_logic(message: types.Message):
-    if not await check_subscription(message.from_user.id):
-        return await message.answer("❌ Спершу підпишись!", reply_markup=subscribe_kb)
-
     query = message.text.strip().lower()
-    logging.info(f"🔍 Пошук: {query}")
-
-    grouped = defaultdict(list)
-
-    for row in data:
-        title = row.get("Назва", "").strip()
-        if query in title.lower():
-            grouped[title].append(row)
-
-    if not grouped:
-        return await message.answer("❌ Нічого не знайдено")
-
-    for title, items in grouped.items():
-        msg_parts = [f"🎬 *{title}*"]
-        for item in items:
-            ep = item.get("Серія", "")
-            desc = item.get("Опис", "")
-            link = item.get("Посилання", "")
-            msg_parts.append(f"📺 {ep} — [{desc}]({link})")
-        await message.answer("\n".join(msg_parts), parse_mode="Markdown")
-
-@dp.message(F.text == "Список серіалів📺")
-async def serials_handler(message: types.Message):
-    await message.answer("📺 Список серіалів поки що готується...")
-
-@dp.message(F.text == "За жанром")
-async def genres_handler(message: types.Message):
-    await message.answer("📂 Обери жанр зі списку...")
-
-@dp.message(F.text == "Мультики👧")
-async def cartoons_handler(message: types.Message):
-    await message.answer("🎞 Тут зібрані мультики для дітей і дорослих")
-
-@dp.message(F.text == "Фільми")
-async def movies_handler(message: types.Message):
-    await message.answer("🎬 Вибрані фільми з бази")
-
-@dp.message(F.text == "Запросити друга🍜🍻")
-async def invite_handler(message: types.Message):
-    await message.answer("🐒 Поділись ботом з другом: https://t.me/KinoTochka24_bot")
-
+    matches = [
+        f"🎬 *{row['Назва']}*\n📝 {row['Опис']}\n🔗 [Дивитись]({row['Посилання']})"
+        for row in data if query in row.get("Назва", "").lower()
+    ]
+    if matches:
+        await message.answer("\n\n".join(matches), parse_mode="Markdown")
+    else:
+        await message.answer("❌ Нічого не знайдено")
+        
 @app.post("/webhook")
 async def telegram_webhook(update: dict):
     logging.info("✅ Webhook endpoint отримав update!")
