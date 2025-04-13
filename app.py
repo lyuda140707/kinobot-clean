@@ -88,11 +88,20 @@ async def search_prompt(message: types.Message):
 
 @dp.message()
 async def search_logic(message: types.Message):
+    if not await check_subscription(message.from_user.id):
+        return await message.answer("❌ Спершу підпишись!", reply_markup=subscribe_kb)
+
     query = message.text.strip().lower()
-    matches = [
-        f"🎬 *{row['Назва']}*\n📝 {row['Опис']}\n🔗 [Дивитись]({row['Посилання']})"
-        for row in data if query in row.get("Назва", "").lower()
-    ]
+    logging.info(f"🔍 Користувач @{message.from_user.username} шукає: {query}")
+
+    matches = []
+    for row in data:
+        name = row.get("Назва", "").lower()
+        description = row.get("Опис", "")
+        link = row.get("Посилання", "")
+        if query in name:
+            matches.append(f"🎬 *{row.get('Назва')}*\n📝 {description}\n🔗 [Дивитись]({link})")
+
     if matches:
         await message.answer("\n\n".join(matches), parse_mode="Markdown")
     else:
