@@ -88,8 +88,6 @@ async def search_prompt(message: types.Message):
 
 @dp.message()
 async def search_logic(message: types.Message):
-    if not await check_subscription(message.from_user.id):
-        return await message.answer("❌ Підпишись!", reply_markup=subscribe_kb)
     query = message.text.strip().lower()
     matches = [
         f"🎬 *{row['Назва']}*\n📝 {row['Опис']}\n🔗 [Дивитись]({row['Посилання']})"
