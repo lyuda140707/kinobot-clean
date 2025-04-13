@@ -108,7 +108,7 @@ async def telegram_webhook(update: dict):
 
 @app.on_event("startup")
 async def on_start():
-    await bot.set_webhook(WEBHOOK_URL)  # <-- Якщо в .env вже є "/webhook", то НЕ додаємо ще раз
+    await bot.set_webhook(WEBHOOK_URL)
     logging.info(f"✅ Webhook встановлено: {WEBHOOK_URL}")
 
 @app.on_event("shutdown")
