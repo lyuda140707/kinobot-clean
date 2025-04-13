@@ -108,8 +108,8 @@ async def telegram_webhook(update: dict):
 
 @app.on_event("startup")
 async def on_start():
-    await bot.set_webhook(WEBHOOK_URL + "/webhook", drop_pending_updates=True)
-    logging.info(f"✅ Webhook встановлено: {WEBHOOK_URL}/webhook")
+    await bot.set_webhook(WEBHOOK_URL)  # без додавання /webhook
+    logging.info(f"✅ Webhook встановлено: {WEBHOOK_URL}")
 
 @app.on_event("shutdown")
 async def on_stop():
