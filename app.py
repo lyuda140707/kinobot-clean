@@ -14,6 +14,8 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import json
 
+from collections import defaultdict
+
 # 🌐 Load env vars
 load_dotenv()
 API_TOKEN = os.getenv("BOT_TOKEN")
@@ -92,20 +94,26 @@ async def search_logic(message: types.Message):
         return await message.answer("❌ Спершу підпишись!", reply_markup=subscribe_kb)
 
     query = message.text.strip().lower()
-    logging.info(f"🔍 Користувач @{message.from_user.username} шукає: {query}")
+    logging.info(f"🔍 Пошук: {query}")
 
-    matches = []
+    grouped = defaultdict(list)
+
     for row in data:
-        name = row.get("Назва", "").lower()
-        description = row.get("Опис", "")
-        link = row.get("Посилання", "")
-        if query in name:
-            matches.append(f"🎬 *{row.get('Назва')}*\n📝 {description}\n🔗 [Дивитись]({link})")
+        title = row.get("Назва", "").strip()
+        if query in title.lower():
+            grouped[title].append(row)
 
-    if matches:
-        await message.answer("\n\n".join(matches), parse_mode="Markdown")
-    else:
-        await message.answer("❌ Нічого не знайдено")
+    if not grouped:
+        return await message.answer("❌ Нічого не знайдено")
+
+    for title, items in grouped.items():
+        msg_parts = [f"🎬 *{title}*"]
+        for item in items:
+            ep = item.get("Серія", "")
+            desc = item.get("Опис", "")
+            link = item.get("Посилання", "")
+            msg_parts.append(f"📺 {ep} — [{desc}]({link})")
+        await message.answer("\n".join(msg_parts), parse_mode="Markdown")
         
 @app.post("/webhook")
 async def telegram_webhook(update: dict):
