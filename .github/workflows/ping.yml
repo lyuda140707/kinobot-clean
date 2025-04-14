@@ -1,0 +1,13 @@
+name: 🟢 Keep Render Bot Awake
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"  # кожні 5 хвилин
+  workflow_dispatch:       # ручний запуск
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🔄 Ping bot endpoint
+        run: curl -sSf https://kino-tochka-v2.onrender.com/ping
