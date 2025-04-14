@@ -88,49 +88,37 @@ subscribe_text = (
 
 @dp.message(F.text == "Пошук🔍")
 async def search_prompt(message: types.Message):
-    if not await check_subscription(message.from_user.id):
-        return await message.answer(subscribe_text, reply_markup=subscribe_kb)
     await message.answer("🔎 Введіть назву...")
     return
 
 @dp.message(F.text == "Список серіалів📽")
 async def serials_handler(message: types.Message):
-    if not await check_subscription(message.from_user.id):
-        return await message.answer(subscribe_text, reply_markup=subscribe_kb)
     await message.answer("🎽 Список серіалів поки що готується...")
     return
 
 @dp.message(F.text == "За жанром")
 async def genres_handler(message: types.Message):
-    if not await check_subscription(message.from_user.id):
-        return await message.answer(subscribe_text, reply_markup=subscribe_kb)
     await message.answer("📂 Обери жанр зі списку...")
     return
 
 @dp.message(F.text == "Мультики👧")
 async def cartoons_handler(message: types.Message):
-    if not await check_subscription(message.from_user.id):
-        return await message.answer(subscribe_text, reply_markup=subscribe_kb)
     await message.answer("🎞 Тут зібрані мультики для дітей і дорослих")
     return
     
 
 @dp.message(F.text == "Фільми")
 async def movies_handler(message: types.Message):
-    if not await check_subscription(message.from_user.id):
-        return await message.answer(subscribe_text, reply_markup=subscribe_kb)
     await message.answer("🎬 Вибрані фільми з бази")
     return
 
 @dp.message(F.text == "Запросити друга🍜🍻")
 async def invite_handler(message: types.Message):
     await message.answer("🐒 Поділись ботом з другом: https://t.me/KinoTochka24_bot")
+    return
 
 @dp.message()
 async def search_logic(message: types.Message):
-    if not await check_subscription(message.from_user.id):
-        return await message.answer("❌ Спершу підпишись!", reply_markup=subscribe_kb)
-
     query = message.text.strip().lower()
     logging.info(f"📩 Користувач написав: {message.text}")
     grouped = defaultdict(list)
