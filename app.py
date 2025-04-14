@@ -76,11 +76,14 @@ main_menu = ReplyKeyboardMarkup(
 )
 
 @dp.message(Command("start"))
-async def send_welcome(message: types.Message):
+async def cmd_start(message: types.Message):
     try:
-        logging.info(f"👋 /start від @{message.from_user.username} ({message.from_user.id})")
+        user = message.from_user
+        logging.info(f"👋 /start від @{user.username} ({user.id})")
 
-        if await check_subscription(message.from_user.id):
+        subscribed = await check_subscription(user.id)
+
+        if subscribed:
             await message.answer(
                 "✅ Ви підписані! Ласкаво просимо до бота!\nОбирай жанр, або натисни «Меню» 👇",
                 reply_markup=main_menu
@@ -91,8 +94,8 @@ async def send_welcome(message: types.Message):
                 reply_markup=subscribe_kb
             )
     except Exception as e:
-        logging.error(f"❌ Помилка у /start: {e}")
-        await message.answer("⚠️ Сталася помилка. Спробуйте пізніше.")
+        logging.error(f"❌ Помилка в обробнику /start: {e}")
+        await message.answer("⚠️ Виникла помилка. Спробуйте ще раз пізніше.")
 
 @dp.message(F.text == "Пошук🔍")
 async def search_prompt(message: types.Message):
