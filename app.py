@@ -34,6 +34,8 @@ creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
 gs_client = gspread.authorize(creds)
 sheet = gs_client.open_by_key('1pJU_6N3zyhRCdVfCPXD5RvHAvwVp0v71rKpvhpS3PC8').worksheet("Лист1")
 data = sheet.get_all_records()
+print(data)
+
 
 # 🚀 FastAPI & Aiogram
 bot = Bot(token=API_TOKEN)
