@@ -55,7 +55,8 @@ async def check_subscription(user_id: int) -> bool:
 # 🔸 Меню
 main_menu = ReplyKeyboardMarkup(
     keyboard=[
-        [KeyboardButton(text="Пошук🔍"), KeyboardButton(text="Список серіалів📺"), KeyboardButton(text="За жанром")],
+        [KeyboardButton(text="Пошук🔍"), KeyboardButton(text="Список 
+        📺"), KeyboardButton(text="За жанром")],
         [KeyboardButton(text="Мультики👧"), KeyboardButton(text="Фільми")],
         [KeyboardButton(text="Запросити друга🍜🍻")]
     ],
@@ -93,7 +94,6 @@ async def search_prompt(message: types.Message):
 
 @dp.message(F.text == "Список серіалів📺")
 async def serials_handler(message: types.Message): 
-    await message.answer("📽 Список серіалів поки готується!")
     return
 
 @dp.message(F.text == "За жанром")
