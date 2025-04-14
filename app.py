@@ -155,11 +155,6 @@ async def on_start():
     await bot.set_webhook(WEBHOOK_URL)
     logging.info(f"✅ Webhook встановлено: {WEBHOOK_URL}")
 
-@app.on_event("shutdown")
-async def on_stop():
-    await bot.delete_webhook()
-    logging.info("❌ Webhook видалено")
-
 @app.get("/")
 async def root():
     return {"status": "working"}
