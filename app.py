@@ -93,6 +93,7 @@ async def search_prompt(message: types.Message):
 
 @dp.message(F.text == "Список серіалів📽")
 async def serials_handler(message: types.Message): 
+    await message.answer("📽 Список серіалів поки готується!")
     return
 
 @dp.message(F.text == "За жанром")
