@@ -167,7 +167,8 @@ async def latest_movies(message: types.Message):
         kb = InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text=item["Серія"], callback_data=f"send_video|{item['Посилання']}")] for item in items
         ])
-        await message.answer(f"🆕 *{title}*\nОбери серію:", reply_markup=kb,_
+        await message.answer(f"🆕 *{title}*\nОбери серію:", reply_markup=kb, parse_mode="Markdown")
+
 
 from urllib.parse import urlparse
 
