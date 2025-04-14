@@ -14,6 +14,8 @@ from oauth2client.service_account import ServiceAccountCredentials
 import json
 from collections import defaultdict
 from urllib.parse import urlparse
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram import Router
 
 # 🌐 Load env vars
 load_dotenv()
@@ -52,6 +54,19 @@ async def check_subscription(user_id: int) -> bool:
     except Exception as e:
         logging.error(f"❌ Subscription check failed: {e}")
         return False
+def parse_telegram_link(link):
+    try:
+        parts = urlparse(link)
+        path_parts = parts.path.strip("/").split("/")
+        if len(path_parts) != 2:
+            return None, None
+        chat_username = f"@{path_parts[0]}"
+        message_id = int(path_parts[1])
+        return chat_username, message_id
+    except Exception as e:
+        logging.error(f"❌ Не вдалося розібрати посилання: {e}")
+        return None, None
+
 
 main_menu = ReplyKeyboardMarkup(
     keyboard=[
@@ -138,37 +153,18 @@ async def invite_handler(message: types.Message):
 
 from urllib.parse import urlparse
 
-def parse_telegram_link(link):
-    try:
-        parts = urlparse(link)
-        path_parts = parts.path.strip("/").split("/")
-        if len(path_parts) != 2:
-            return None, None
-        chat_username = f"@{path_parts[0]}"
-        message_id = int(path_parts[1])
-        return chat_username, message_id
-    except Exception as e:
-        logging.error(f"❌ Не вдалося розібрати посилання: {e}")
-        return None, None
 
 @dp.message()
 async def search_logic(message: types.Message):
-    # Пропускаємо, якщо це одна з команд-кнопок
-    skip_texts = [
-        "Пошук🔍", "Список серіалів📽", "За жанром",
-        "Мультики👧", "Фільми", "Запросити друга🍜🍻"
-    ]
+    skip_texts = ["Пошук🔍", "Список серіалів📽", "За жанром", "Мультики👧", "Фільми", "Запросити друга🍜🍻"]
     if message.text in skip_texts:
         return
 
-    # Перевірка підписки
     if not await check_subscription(message.from_user.id):
         return await message.answer("❌ Спершу підпишись!", reply_markup=subscribe_kb)
 
     query = message.text.strip().lower()
-    logging.info(f"📩 Користувач написав: {message.text}")
     grouped = defaultdict(list)
-
     for row in data:
         title = row.get("Назва", "").strip()
         if query in title.lower():
@@ -178,22 +174,31 @@ async def search_logic(message: types.Message):
         return await message.answer("❌ Нічого не знайдено")
 
     for title, items in grouped.items():
-        await message.answer(f"🎬 *{title}*", parse_mode="Markdown")
-        for item in items:
-            link = item.get("Посилання", "")
-            chat_username, message_id = parse_telegram_link(link)
-            if not chat_username or not message_id:
-                await message.answer("❌ Невірне посилання")
-                continue
-            try:
-                await bot.copy_message(
-                    chat_id=message.chat.id,
-                    from_chat_id=chat_username,
-                    message_id=message_id
-                )
-            except Exception as e:
-                logging.error(f"❌ Не вдалося переслати відео: {e}")
-                await message.answer("❌ Не вдалося надіслати відео")
+        kb = InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text=item["Серія"], callback_data=f"send_video|{item['Посилання']}")] for item in items
+        ])
+        await message.answer(f"🎬 *{title}*\nОбери серію:", reply_markup=kb, parse_mode="Markdown")
+
+@dp.callback_query(F.data.startswith("send_video|"))
+async def handle_video_callback(callback: types.CallbackQuery):
+    await callback.answer()  # ⬅ Закриває "loading" у Telegram
+
+    link = callback.data.split("|")[1]
+    chat_username, message_id = parse_telegram_link(link)
+
+    if not chat_username or not message_id:
+        return await callback.message.answer("❌ Невірне посилання")
+
+    try:
+        await bot.copy_message(
+            chat_id=callback.from_user.id,
+            from_chat_id=chat_username,
+            message_id=message_id
+        )
+    except Exception as e:
+        logging.error(f"❌ Не вдалося переслати відео: {e}")
+        await callback.message.answer("❌ Не вдалося надіслати відео")
+
 
 @app.post("/webhook")
 async def telegram_webhook(update: dict):
