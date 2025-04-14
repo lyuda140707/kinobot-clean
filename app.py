@@ -63,8 +63,6 @@ class SubscriptionMiddleware(BaseMiddleware):
                 return
         return await handler(event, data)
 
-dp.message.middleware(SubscriptionMiddleware())
-
 # 🔸 Меню
 main_menu = ReplyKeyboardMarkup(
     keyboard=[
