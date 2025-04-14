@@ -113,20 +113,12 @@ async def show_new_releases_effect(message: types.Message):
 
 @dp.message(Command("start"))
 async def send_welcome(message: types.Message):
-    logging.info(f"👋 /start від @{message.from_user.username} ({message.from_user.id})")
+    await message.answer(
+        "👋 Привіт! Це бот *«КіноТочка»* 🎬\nОбирай жанр, або натисни «Меню» 👇",
+        reply_markup=main_menu,
+        parse_mode="Markdown"
+    )
 
-    if await check_subscription(message.from_user.id):
-        await message.answer(
-            "👋 Привіт! Це бот *«КіноТочка»* 🎬\nОбирай жанр, або натисни «Меню» 👇",
-            reply_markup=main_menu,
-            parse_mode="Markdown"
-        )
-    else:
-        await message.answer(
-            "❌ Упс! Ви ще не з нами...\n\nЩоб користуватись ботом, будь ласка, *спершу підпишіться* на наш Telegram-канал 👇",
-            reply_markup=subscribe_kb,
-            parse_mode="Markdown"
-        )
 
 # Спільне повідомлення для перевірки
 subscribe_text = (
