@@ -13,6 +13,7 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import json
 from collections import defaultdict
+from urllib.parse import urlparse
 
 # 🌐 Load env vars
 load_dotenv()
@@ -135,21 +136,35 @@ async def invite_handler(message: types.Message):
     await message.answer("🐒 Поділись ботом з другом: https://t.me/KinoTochka24_bot")
     return
 
+from urllib.parse import urlparse
+
+def parse_telegram_link(link):
+    try:
+        parts = urlparse(link)
+        path_parts = parts.path.strip("/").split("/")
+        if len(path_parts) != 2:
+            return None, None
+        chat_username = f"@{path_parts[0]}"
+        message_id = int(path_parts[1])
+        return chat_username, message_id
+    except Exception as e:
+        logging.error(f"❌ Не вдалося розібрати посилання: {e}")
+        return None, None
+
 @dp.message()
 async def search_logic(message: types.Message):
-    # ❌ Не шукати, якщо це одна з кнопок меню
+    # Пропускаємо, якщо це одна з команд-кнопок
     skip_texts = [
-        "Пошук🔎", "Список серіалів📺", "За жанром",
+        "Пошук🔍", "Список серіалів📽", "За жанром",
         "Мультики👧", "Фільми", "Запросити друга🍜🍻"
     ]
     if message.text in skip_texts:
         return
 
-    # 🔐 Перевірка підписки
+    # Перевірка підписки
     if not await check_subscription(message.from_user.id):
         return await message.answer("❌ Спершу підпишись!", reply_markup=subscribe_kb)
 
-    # 🔎 Пошук у таблиці
     query = message.text.strip().lower()
     logging.info(f"📩 Користувач написав: {message.text}")
     grouped = defaultdict(list)
@@ -163,14 +178,22 @@ async def search_logic(message: types.Message):
         return await message.answer("❌ Нічого не знайдено")
 
     for title, items in grouped.items():
-        msg_parts = [f"🎬 *{title}*"]
+        await message.answer(f"🎬 *{title}*", parse_mode="Markdown")
         for item in items:
-            ep = item.get("Серія", "")
-            desc = item.get("Опис", "")
             link = item.get("Посилання", "")
-            await send_video_from_link(message.chat.id, link)
-        await message.answer("\n".join(msg_parts), parse_mode="Markdown")
-
+            chat_username, message_id = parse_telegram_link(link)
+            if not chat_username or not message_id:
+                await message.answer("❌ Невірне посилання")
+                continue
+            try:
+                await bot.copy_message(
+                    chat_id=message.chat.id,
+                    from_chat_id=chat_username,
+                    message_id=message_id
+                )
+            except Exception as e:
+                logging.error(f"❌ Не вдалося переслати відео: {e}")
+                await message.answer("❌ Не вдалося надіслати відео")
 
 @app.post("/webhook")
 async def telegram_webhook(update: dict):
