@@ -3,10 +3,8 @@ import logging
 import uvicorn
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
-from typing import Callable, Dict, Any, Awaitable
 from aiogram import Bot, Dispatcher, types, F
 from aiogram.types import TelegramObject, InlineKeyboardMarkup, InlineKeyboardButton, Update, ReplyKeyboardMarkup, KeyboardButton
-from aiogram.dispatcher.middlewares.base import BaseMiddleware
 from aiogram.filters import Command
 from aiogram.fsm.storage.memory import MemoryStorage
 from dotenv import load_dotenv
@@ -52,18 +50,6 @@ async def check_subscription(user_id: int) -> bool:
     except Exception as e:
         logging.error(f"❌ Subscription check failed: {e}")
         return False
-
-class SubscriptionMiddleware(BaseMiddleware):
-    async def __call__(self, handler: Callable[[TelegramObject, Dict[str, Any]], Awaitable[Any]], event: TelegramObject, data: Dict[str, Any]) -> Any:
-        if isinstance(event, types.Message):
-            if event.text and any(cmd in event.text.lower() for cmd in ["/my_status", "/get_chat_id"]):
-                return await handler(event, data)
-            if not await check_subscription(event.from_user.id):
-                await event.reply("❌ Спершу підпишіться на канал", reply_markup=subscribe_kb)
-                return
-        return await handler(event, data)
-
-dp.message.middleware(SubscriptionMiddleware())
 
 # 🔸 Меню
 main_menu = ReplyKeyboardMarkup(
@@ -171,4 +157,3 @@ async def ping():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
     uvicorn.run("app:app", host="0.0.0.0", port=port)
-
