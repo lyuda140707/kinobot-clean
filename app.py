@@ -115,6 +115,19 @@ async def invite_handler(message: types.Message):
 
 @dp.message()
 async def search_logic(message: types.Message):
+    # ❌ Не шукати, якщо це одна з кнопок меню
+    skip_texts = [
+        "Пошук🔍", "Список серіалів📽", "За жанром",
+        "Мультики👧", "Фільми", "Запросити друга🍜🍻"
+    ]
+    if message.text in skip_texts:
+        return
+
+    # 🔐 Перевірка підписки
+    if not await check_subscription(message.from_user.id):
+        return await message.answer("❌ Спершу підпишись!", reply_markup=subscribe_kb)
+
+    # 🔎 Пошук у таблиці
     query = message.text.strip().lower()
     logging.info(f"📩 Користувач написав: {message.text}")
     grouped = defaultdict(list)
@@ -135,6 +148,7 @@ async def search_logic(message: types.Message):
             link = item.get("Посилання", "")
             msg_parts.append(f"📺 {ep} — [{desc}]({link})")
         await message.answer("\n".join(msg_parts), parse_mode="Markdown")
+
 
 @app.post("/webhook")
 async def telegram_webhook(update: dict):
