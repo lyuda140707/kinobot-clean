@@ -61,6 +61,29 @@ main_menu = ReplyKeyboardMarkup(
     resize_keyboard=True
 )
 
+async def send_video_from_link(chat_id: int, link: str):
+    try:
+        # 1. Витягаємо username і message_id з посилання
+        parts = link.strip().split("/")
+        username = parts[3]
+        msg_id = int(parts[4])
+
+        # 2. Отримуємо реальний chat_id по username
+        chat = await bot.get_chat(f"@{username}")
+        real_chat_id = chat.id
+
+        # 3. Отримуємо повідомлення
+        msg = await bot.get_message(chat_id=real_chat_id, message_id=msg_id)
+        if not msg.video:
+            return await bot.send_message(chat_id, "⚠️ Це не відео")
+
+        # 4. Надсилаємо відео без каналу
+        await bot.send_video(chat_id, video=msg.video.file_id, caption=msg.caption or "")
+    
+    except Exception as e:
+        logging.error(f"❌ Помилка при відправці відео: {e}")
+        await bot.send_message(chat_id, f"❌ Не вдалося надіслати відео")
+
 @dp.message(Command("start"))
 async def send_welcome(message: types.Message):
     logging.info(f"👋 /start від @{message.from_user.username} ({message.from_user.id})")
@@ -145,7 +168,7 @@ async def search_logic(message: types.Message):
             ep = item.get("Серія", "")
             desc = item.get("Опис", "")
             link = item.get("Посилання", "")
-            msg_parts.append(f"📺 {ep} — [{desc}]({link})")
+            await send_video_from_link(message.chat.id, link)
         await message.answer("\n".join(msg_parts), parse_mode="Markdown")
 
 
