@@ -76,15 +76,17 @@ main_menu = ReplyKeyboardMarkup(
 )
 
 @dp.message(Command("start"))
-async def cmd_start(message: types.Message):
+async def send_welcome(message: types.Message):
+    logging.info(f"👋 /start від @{message.from_user.username} ({message.from_user.id})")
+
     if await check_subscription(message.from_user.id):
         await message.answer(
-            "👋 Привіт! Це бот «КіноТочка» 🎬\nОбирай жанр, або натисни «Меню» 👇",
+            "✅ Ви підписані! Ласкаво просимо до бота!\nОбирай жанр, або натисни «Меню» 👇",
             reply_markup=main_menu
         )
     else:
         await message.answer(
-            "❌ Щоб користуватись ботом — підпишись на канал!",
+            "❗️Упс! Ви ще не з нами...\n\nЩоб користуватись ботом, будь ласка, спершу підпишіться на наш Telegram-канал 👇",
             reply_markup=subscribe_kb
         )
 
