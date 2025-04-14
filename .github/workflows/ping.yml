@@ -3,6 +3,7 @@ name: Keep Bot Alive
 on:
   schedule:
     - cron: '*/5 * * * *'  # кожні 5 хв
+  workflow_dispatch:       # ⬅️ додає кнопку "Run workflow"
 
 jobs:
   ping:
