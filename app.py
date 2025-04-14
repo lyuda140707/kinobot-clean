@@ -71,11 +71,12 @@ def parse_telegram_link(link):
 main_menu = ReplyKeyboardMarkup(
     keyboard=[
         [KeyboardButton(text="Пошук🔎"), KeyboardButton(text="Список серіалів📺"), KeyboardButton(text="За жанром")],
-        [KeyboardButton(text="Мультики👧"), KeyboardButton(text="Фільми")],
-        [KeyboardButton(text="Запросити друга🤜🤛")]
+        [KeyboardButton(text="Мультики👧"), KeyboardButton(text="Фільми"), KeyboardButton(text="📅 Новинки")],
+        [KeyboardButton(text="Запросити друга🍜🍻")]
     ],
     resize_keyboard=True
 )
+
 
 async def send_video_from_link(chat_id: int, link: str):
     try:
@@ -150,6 +151,23 @@ async def movies_handler(message: types.Message):
 async def invite_handler(message: types.Message):
     await message.answer("🐒 Поділись ботом з другом: https://t.me/KinoTochka24_bot")
     return
+    
+@dp.message(F.text == "📅 Новинки")
+async def latest_movies(message: types.Message):
+    if not await check_subscription(message.from_user.id):
+        return await message.answer("❌ Спершу підпишись!", reply_markup=subscribe_kb)
+
+    latest = data[-5:]  # останні 5 рядків таблиці
+    grouped = defaultdict(list)
+    for row in latest:
+        title = row.get("Назва", "").strip()
+        grouped[title].append(row)
+
+    for title, items in grouped.items():
+        kb = InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text=item["Серія"], callback_data=f"send_video|{item['Посилання']}")] for item in items
+        ])
+        await message.answer(f"🆕 *{title}*\nОбери серію:", reply_markup=kb,_
 
 from urllib.parse import urlparse
 
