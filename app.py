@@ -92,24 +92,20 @@ async def search_prompt(message: types.Message):
     return
 
 @dp.message(F.text == "Список серіалів📽")
-async def serials_handler(message: types.Message):
-    await message.answer("🎽 Список серіалів поки що готується...")
+async def serials_handler(message: types.Message): 
     return
 
 @dp.message(F.text == "За жанром")
 async def genres_handler(message: types.Message):
-    await message.answer("📂 Обери жанр зі списку...")
     return
 
 @dp.message(F.text == "Мультики👧")
 async def cartoons_handler(message: types.Message):
-    await message.answer("🎞 Тут зібрані мультики для дітей і дорослих")
     return
     
 
 @dp.message(F.text == "Фільми")
 async def movies_handler(message: types.Message):
-    await message.answer("🎬 Вибрані фільми з бази")
     return
 
 @dp.message(F.text == "Запросити друга🍜🍻")
