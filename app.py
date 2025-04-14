@@ -108,6 +108,7 @@ async def show_new_releases_effect(message: types.Message):
     await message.answer("🧠 Аналізую базу...")
     await asyncio.sleep(1)
     await message.answer("🎬 Знайдено! Обирай:")
+    await asyncio.sleep(1)
 
 @dp.message(Command("start"))
 async def send_welcome(message: types.Message):
