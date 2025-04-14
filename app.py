@@ -73,7 +73,7 @@ main_menu = ReplyKeyboardMarkup(
     keyboard=[
         [KeyboardButton(text="Пошук🔎"), KeyboardButton(text="Список серіалів📺"), KeyboardButton(text="За жанром")],
         [KeyboardButton(text="Мультики👧"), KeyboardButton(text="Фільми"), KeyboardButton(text="📅 Новинки")],
-        [KeyboardButton(text="Запросити друга🍜🍻")]
+        [KeyboardButton(text="Запросити друга🤜🤛")]
     ],
     resize_keyboard=True
 )
