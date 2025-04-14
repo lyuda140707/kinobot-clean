@@ -55,7 +55,7 @@ async def check_subscription(user_id: int) -> bool:
 # 🔸 Меню
 main_menu = ReplyKeyboardMarkup(
     keyboard=[
-        [KeyboardButton(text="Пошук🔍"), KeyboardButton(text="Список серіалів📽"), KeyboardButton(text="За жанром")],
+        [KeyboardButton(text="Пошук🔍"), KeyboardButton(text="Список серіалів"), KeyboardButton(text="За жанром")],
         [KeyboardButton(text="Мультики👧"), KeyboardButton(text="Фільми")],
         [KeyboardButton(text="Запросити друга🍜🍻")]
     ],
@@ -91,7 +91,7 @@ async def search_prompt(message: types.Message):
     await message.answer("🔎 Введіть назву...")
     return
 
-@dp.message(F.text == "Список серіалів📽")
+@dp.message(F.text == "Список серіалів")
 async def serials_handler(message: types.Message): 
     await message.answer("📽 Список серіалів поки готується!")
     return
@@ -118,7 +118,7 @@ async def invite_handler(message: types.Message):
 async def search_logic(message: types.Message):
     # ❌ Не шукати, якщо це одна з кнопок меню
     skip_texts = [
-        "Пошук🔍", "Список серіалів📽", "За жанром",
+        "Пошук🔍", "Список серіалів", "За жанром",
         "Мультики👧", "Фільми", "Запросити друга🍜🍻"
     ]
     if message.text in skip_texts:
