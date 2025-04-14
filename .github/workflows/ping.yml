@@ -2,15 +2,13 @@ name: Keep Render Bot Alive
 
 on:
   schedule:
-    - cron: "*/5 * * * *" # кожні 5 хвилин
+    - cron: '*/5 * * * *'  # кожні 5 хв
   workflow_dispatch:
 
 jobs:
   ping:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Send POST request to /webhook
-        run: |
-          curl -X POST https://kino-tochka-v2.onrender.com/webhook \
-          -H "Content-Type: application/json" \
-          -d '{"update_id": 0, "message": {"message_id": 0, "from": {"id": 123456789, "is_bot": false, "first_name": "PingBot", "username": "ping_bot"}, "chat": {"id": 123456789, "first_name": "PingBot", "username": "ping_bot", "type": "private"}, "date": 1609459200, "text": "/ping"}}'
+    - name: Curl to keep alive
+      run: curl -s https://kino-tochka-v2.onrender.com/ping
