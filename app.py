@@ -72,9 +72,15 @@ main_menu = ReplyKeyboardMarkup(
 @dp.message(Command("start"))
 async def cmd_start(message: types.Message):
     if await check_subscription(message.from_user.id):
-        await message.answer("Ласкаво просимо!", reply_markup=main_menu)
+        await message.answer(
+            "👋 Привіт! Це бот «КіноТочка» 🎬\nОбирай жанр, або натисни «Меню» 👇",
+            reply_markup=main_menu
+        )
     else:
-        await message.answer("❌ Підпишись!", reply_markup=subscribe_kb)
+        await message.answer(
+            "❌ Щоб користуватись ботом — підпишись на канал!",
+            reply_markup=subscribe_kb
+        )
 
 @dp.message(F.text == "Пошук🔍")
 async def search_prompt(message: types.Message):
