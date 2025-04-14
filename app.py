@@ -90,24 +90,41 @@ async def send_welcome(message: types.Message):
             parse_mode="Markdown"
         )
 
+# Спільне повідомлення для перевірки
+subscribe_text = (
+    "❌ Упс! Ви ще не з нами 😢\n\n"
+    "Щоб користуватись усіма фішками бота — підпишіться на наш канал 🎬\n\n"
+    "👇 Тицяй кнопку — і ласкаво просимо!"
+)
+
 @dp.message(F.text == "Пошук🔍")
 async def search_prompt(message: types.Message):
+    if not await check_subscription(message.from_user.id):
+        return await message.answer(subscribe_text, reply_markup=subscribe_kb)
     await message.answer("🔎 Введіть назву...")
 
 @dp.message(F.text == "Список серіалів📽")
 async def serials_handler(message: types.Message):
+    if not await check_subscription(message.from_user.id):
+        return await message.answer(subscribe_text, reply_markup=subscribe_kb)
     await message.answer("🎽 Список серіалів поки що готується...")
 
 @dp.message(F.text == "За жанром")
 async def genres_handler(message: types.Message):
+    if not await check_subscription(message.from_user.id):
+        return await message.answer(subscribe_text, reply_markup=subscribe_kb)
     await message.answer("📂 Обери жанр зі списку...")
 
 @dp.message(F.text == "Мультики👧")
 async def cartoons_handler(message: types.Message):
+    if not await check_subscription(message.from_user.id):
+        return await message.answer(subscribe_text, reply_markup=subscribe_kb)
     await message.answer("🎞 Тут зібрані мультики для дітей і дорослих")
 
 @dp.message(F.text == "Фільми")
 async def movies_handler(message: types.Message):
+    if not await check_subscription(message.from_user.id):
+        return await message.answer(subscribe_text, reply_markup=subscribe_kb)
     await message.answer("🎬 Вибрані фільми з бази")
 
 @dp.message(F.text == "Запросити друга🍜🍻")
