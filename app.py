@@ -16,6 +16,7 @@ from collections import defaultdict
 from urllib.parse import urlparse
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram import Router
+import asyncio
 
 # 🌐 Load env vars
 load_dotenv()
@@ -100,6 +101,13 @@ async def send_video_from_link(chat_id: int, link: str):
     except Exception as e:
         logging.error(f"❌ Помилка при відправці відео: {e}")
         await bot.send_message(chat_id, f"❌ Не вдалося надіслати відео")
+        
+async def show_new_releases_effect(message: types.Message):
+    await message.answer("🔍 Шукаю новинки...")
+    await asyncio.sleep(1)
+    await message.answer("🧠 Аналізую базу...")
+    await asyncio.sleep(1)
+    await message.answer("🎬 Знайдено! Обирай:")
 
 @dp.message(Command("start"))
 async def send_welcome(message: types.Message):
@@ -153,21 +161,24 @@ async def invite_handler(message: types.Message):
     return
     
 @dp.message(F.text == "📅 Новинки")
-async def latest_movies(message: types.Message):
+async def new_releases_handler(message: types.Message):
     if not await check_subscription(message.from_user.id):
-        return await message.answer("❌ Спершу підпишись!", reply_markup=subscribe_kb)
+        return await message.answer(subscribe_text, reply_markup=subscribe_kb)
 
-    latest = data[-5:]  # останні 5 рядків таблиці
+    await show_new_releases_effect(message)  # 👈 Додано ефект очікування
+
+    recent = data[-5:]  # Останні 5 записів
     grouped = defaultdict(list)
-    for row in latest:
-        title = row.get("Назва", "").strip()
-        grouped[title].append(row)
+    for row in recent:
+        grouped[row["Назва"]].append(row)
 
     for title, items in grouped.items():
         kb = InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text=item["Серія"], callback_data=f"send_video|{item['Посилання']}")] for item in items
+            [InlineKeyboardButton(text=item["Серія"], callback_data=f"send_video|{item['Посилання']}")]
+            for item in items
         ])
         await message.answer(f"🆕 *{title}*\nОбери серію:", reply_markup=kb, parse_mode="Markdown")
+
 
 
 from urllib.parse import urlparse
