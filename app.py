@@ -52,11 +52,9 @@ async def check_subscription(user_id: int) -> bool:
         logging.error(f"❌ Subscription check failed: {e}")
         return False
 
-# 🔸 Меню
 main_menu = ReplyKeyboardMarkup(
     keyboard=[
-        [KeyboardButton(text="Пошук🔍"), KeyboardButton(text="Список 
-        📺"), KeyboardButton(text="За жанром")],
+        [KeyboardButton(text="Пошук🔎"), KeyboardButton(text="Список серіалів📺"), KeyboardButton(text="За жанром")],
         [KeyboardButton(text="Мультики👧"), KeyboardButton(text="Фільми")],
         [KeyboardButton(text="Запросити друга🍜🍻")]
     ],
@@ -87,7 +85,7 @@ subscribe_text = (
     "👇 Тицяй кнопку — і ласкаво просимо!"
 )
 
-@dp.message(F.text == "Пошук🔍")
+@dp.message(F.text == "Пошук🔎")
 async def search_prompt(message: types.Message):
     await message.answer("🔎 Введіть назву...")
     return
@@ -118,7 +116,7 @@ async def invite_handler(message: types.Message):
 async def search_logic(message: types.Message):
     # ❌ Не шукати, якщо це одна з кнопок меню
     skip_texts = [
-        "Пошук🔍", "Список серіалів📺", "За жанром",
+        "Пошук🔎", "Список серіалів📺", "За жанром",
         "Мультики👧", "Фільми", "Запросити друга🍜🍻"
     ]
     if message.text in skip_texts:
