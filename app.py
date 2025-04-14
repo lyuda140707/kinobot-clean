@@ -195,7 +195,7 @@ async def search_logic(message: types.Message):
         kb = InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text=item["Серія"], callback_data=f"send_video|{item['Посилання']}")] for item in items
         ])
-        await message.answer(f"🎬 *{title}*\nОбери серію:", reply_markup=kb, parse_mode="Markdown")
+        await message.answer(f"🆕 *{title}*\nОбери серію:", reply_markup=kb, parse_mode="Markdown")
 
 @dp.callback_query(F.data.startswith("send_video|"))
 async def handle_video_callback(callback: types.CallbackQuery):
