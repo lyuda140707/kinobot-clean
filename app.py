@@ -166,7 +166,6 @@ async def new_releases_handler(message: types.Message):
         return await message.answer(subscribe_text, reply_markup=subscribe_kb)
 
     await show_new_releases_effect(message)  # 👈 Додано ефект очікування
-
     recent = data[-5:]  # Останні 5 записів
     grouped = defaultdict(list)
     for row in recent:
@@ -186,7 +185,8 @@ from urllib.parse import urlparse
 
 @dp.message()
 async def search_logic(message: types.Message):
-    skip_texts = ["Пошук🔍", "Список серіалів📽", "За жанром", "Мультики👧", "Фільми", "Запросити друга🤜🤛"]
+    skip_texts = ["Пошук🔍", "Список серіалів📽", "За жанром", "Мультики👧", "Фільми", "Запросити друга🤜🤛", "📅 Новинки"]
+
     if message.text in skip_texts:
         return
 
