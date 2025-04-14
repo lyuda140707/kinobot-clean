@@ -17,6 +17,7 @@ from urllib.parse import urlparse
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram import Router
 import asyncio
+import random
 
 # 🌐 Load env vars
 load_dotenv()
@@ -157,8 +158,7 @@ async def movies_handler(message: types.Message):
     return
 
 @dp.message(F.text == "Запросити друга🤜🤛")
-async def invite_handler(message: types.Message):
-    await message.answer("🐒 Поділись ботом з другом: https://t.me/KinoTochka24_bot")
+async def invite_handler(message: types.Message): 
     return
     
 @dp.message(F.text == "📅 Новинки")
@@ -202,7 +202,14 @@ async def search_logic(message: types.Message):
             grouped[title].append(row)
 
     if not grouped:
-        return await message.answer("❌ Нічого не знайдено")
+        mem_replies = [
+            "😢 Нічого не знайдено. Можливо, ще не додали...",
+            "🍿 Порожньо, як у холодильнику перед ЗП...",
+            "🤖 Я шукав-шукав... і нічого.",
+            "💤 Нічого немає, йду спати...",
+            "🚫 Такого фільму нема в моїх архівах!"
+        ]
+        return await message.answer(random.choice(mem_replies))
 
     for title, items in grouped.items():
         kb = InlineKeyboardMarkup(inline_keyboard=[
