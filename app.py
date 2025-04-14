@@ -15,14 +15,17 @@ from oauth2client.service_account import ServiceAccountCredentials
 import json
 from collections import defaultdict
 
+# 🌐 Load env vars
 load_dotenv()
 API_TOKEN = os.getenv("BOT_TOKEN")
 WEBHOOK_URL = os.getenv("WEBHOOK_URL")
 GROUP_CHAT_ID = '-1002649275599'
 GROUP_URL = 'https://t.me/KinoTochkaUA'
 
+# 🚀 Logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
+# 🚀 Google Sheets creds
 json_str = os.getenv("GOOGLE_SHEETS_CREDENTIALS_JSON")
 if not json_str:
     raise Exception("❌ GOOGLE_SHEETS_CREDENTIALS_JSON not found")
@@ -33,10 +36,12 @@ gs_client = gspread.authorize(creds)
 sheet = gs_client.open_by_key('1pJU_6N3zyhRCdVfCPXD5RvHAvwVp0v71rKpvhpS3PC8').worksheet("Лист1")
 data = sheet.get_all_records()
 
+# 🚀 FastAPI & Aiogram
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(storage=MemoryStorage())
 app = FastAPI()
 
+# 🔐 Subscribe check
 subscribe_kb = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="🔔 Підписатися", url=GROUP_URL)]])
 
 async def check_subscription(user_id: int) -> bool:
@@ -60,9 +65,10 @@ class SubscriptionMiddleware(BaseMiddleware):
 
 dp.message.middleware(SubscriptionMiddleware())
 
+# 🔸 Меню
 main_menu = ReplyKeyboardMarkup(
     keyboard=[
-        [KeyboardButton(text="Пошук🔍"), KeyboardButton(text="Список серіалів📽"), KeyboardButton(text="За жанром")],
+        [KeyboardButton(text="Пошук🔍"), KeyboardButton(text="Список серіалів🎽"), KeyboardButton(text="За жанром")],
         [KeyboardButton(text="Мультики👧"), KeyboardButton(text="Фільми")],
         [KeyboardButton(text="Запросити друга🍜🍻")]
     ],
@@ -86,9 +92,9 @@ async def cmd_start(message: types.Message):
 async def search_prompt(message: types.Message):
     await message.answer("🔎 Введіть назву...")
 
-@dp.message(F.text == "Список серіалів📺")
+@dp.message(F.text == "Список серіалів🎽")
 async def serials_handler(message: types.Message):
-    await message.answer("📺 Список серіалів поки що готується...")
+    await message.answer("🎽 Список серіалів поки що готується...")
 
 @dp.message(F.text == "За жанром")
 async def genres_handler(message: types.Message):
@@ -112,7 +118,7 @@ async def search_logic(message: types.Message):
         return await message.answer("❌ Спершу підпишись!", reply_markup=subscribe_kb)
 
     query = message.text.strip().lower()
-    logging.info(f"📩 Користувач написав повідомлення: {message.text}")
+    logging.info(f"📩 Користувач написав: {message.text}")
     grouped = defaultdict(list)
 
     for row in data:
