@@ -1,0 +1,12 @@
+name: Keep Bot Alive
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'  # кожні 5 хв
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call /ping
+        run: curl -s https://kino-tochka-v2.onrender.com/ping
