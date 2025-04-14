@@ -68,7 +68,7 @@ dp.message.middleware(SubscriptionMiddleware())
 # 🔸 Меню
 main_menu = ReplyKeyboardMarkup(
     keyboard=[
-        [KeyboardButton(text="Пошук🔍"), KeyboardButton(text="Список серіалів🎽"), KeyboardButton(text="За жанром")],
+        [KeyboardButton(text="Пошук🔍"), KeyboardButton(text="Список серіалів📽"), KeyboardButton(text="За жанром")],
         [KeyboardButton(text="Мультики👧"), KeyboardButton(text="Фільми")],
         [KeyboardButton(text="Запросити друга🍜🍻")]
     ],
@@ -76,32 +76,27 @@ main_menu = ReplyKeyboardMarkup(
 )
 
 @dp.message(Command("start"))
-async def cmd_start(message: types.Message):
-    try:
-        user = message.from_user
-        logging.info(f"👋 /start від @{user.username} ({user.id})")
+async def send_welcome(message: types.Message):
+    logging.info(f"👋 /start від @{message.from_user.username} ({message.from_user.id})")
 
-        subscribed = await check_subscription(user.id)
-
-        if subscribed:
-            await message.answer(
-                "✅ Ви підписані! Ласкаво просимо до бота!\nОбирай жанр, або натисни «Меню» 👇",
-                reply_markup=main_menu
-            )
-        else:
-            await message.answer(
-                "❗️Упс! Ви ще не з нами...\n\nЩоб користуватись ботом, будь ласка, спершу підпишіться на наш Telegram-канал 👇",
-                reply_markup=subscribe_kb
-            )
-    except Exception as e:
-        logging.error(f"❌ Помилка в обробнику /start: {e}")
-        await message.answer("⚠️ Виникла помилка. Спробуйте ще раз пізніше.")
+    if await check_subscription(message.from_user.id):
+        await message.answer(
+            "👋 Привіт! Це бот *«КіноТочка»* 🎬\nОбирай жанр, або натисни «Меню» 👇",
+            reply_markup=main_menu,
+            parse_mode="Markdown"
+        )
+    else:
+        await message.answer(
+            "❌ Упс! Ви ще не з нами...\n\nЩоб користуватись ботом, будь ласка, *спершу підпишіться* на наш Telegram-канал 👇",
+            reply_markup=subscribe_kb,
+            parse_mode="Markdown"
+        )
 
 @dp.message(F.text == "Пошук🔍")
 async def search_prompt(message: types.Message):
     await message.answer("🔎 Введіть назву...")
 
-@dp.message(F.text == "Список серіалів🎽")
+@dp.message(F.text == "Список серіалів📽")
 async def serials_handler(message: types.Message):
     await message.answer("🎽 Список серіалів поки що готується...")
 
