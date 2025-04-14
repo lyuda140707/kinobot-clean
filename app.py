@@ -77,18 +77,22 @@ main_menu = ReplyKeyboardMarkup(
 
 @dp.message(Command("start"))
 async def send_welcome(message: types.Message):
-    logging.info(f"👋 /start від @{message.from_user.username} ({message.from_user.id})")
+    try:
+        logging.info(f"👋 /start від @{message.from_user.username} ({message.from_user.id})")
 
-    if await check_subscription(message.from_user.id):
-        await message.answer(
-            "✅ Ви підписані! Ласкаво просимо до бота!\nОбирай жанр, або натисни «Меню» 👇",
-            reply_markup=main_menu
-        )
-    else:
-        await message.answer(
-            "❗️Упс! Ви ще не з нами...\n\nЩоб користуватись ботом, будь ласка, спершу підпишіться на наш Telegram-канал 👇",
-            reply_markup=subscribe_kb
-        )
+        if await check_subscription(message.from_user.id):
+            await message.answer(
+                "✅ Ви підписані! Ласкаво просимо до бота!\nОбирай жанр, або натисни «Меню» 👇",
+                reply_markup=main_menu
+            )
+        else:
+            await message.answer(
+                "❗️Упс! Ви ще не з нами...\n\nЩоб користуватись ботом, будь ласка, спершу підпишіться на наш Telegram-канал 👇",
+                reply_markup=subscribe_kb
+            )
+    except Exception as e:
+        logging.error(f"❌ Помилка у /start: {e}")
+        await message.answer("⚠️ Сталася помилка. Спробуйте пізніше.")
 
 @dp.message(F.text == "Пошук🔍")
 async def search_prompt(message: types.Message):
