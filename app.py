@@ -72,7 +72,7 @@ main_menu = ReplyKeyboardMarkup(
     keyboard=[
         [KeyboardButton(text="Пошук🔎"), KeyboardButton(text="Список серіалів📺"), KeyboardButton(text="За жанром")],
         [KeyboardButton(text="Мультики👧"), KeyboardButton(text="Фільми")],
-        [KeyboardButton(text="Запросити друга🍜🍻")]
+        [KeyboardButton(text="Запросити друга🤜🤛")]
     ],
     resize_keyboard=True
 )
@@ -146,7 +146,7 @@ async def cartoons_handler(message: types.Message):
 async def movies_handler(message: types.Message):
     return
 
-@dp.message(F.text == "Запросити друга🍜🍻")
+@dp.message(F.text == "Запросити друга🤜🤛")
 async def invite_handler(message: types.Message):
     await message.answer("🐒 Поділись ботом з другом: https://t.me/KinoTochka24_bot")
     return
@@ -156,7 +156,7 @@ from urllib.parse import urlparse
 
 @dp.message()
 async def search_logic(message: types.Message):
-    skip_texts = ["Пошук🔍", "Список серіалів📽", "За жанром", "Мультики👧", "Фільми", "Запросити друга🍜🍻"]
+    skip_texts = ["Пошук🔍", "Список серіалів📽", "За жанром", "Мультики👧", "Фільми", "Запросити друга🤜🤛"]
     if message.text in skip_texts:
         return
 
