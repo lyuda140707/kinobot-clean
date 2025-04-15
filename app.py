@@ -158,7 +158,12 @@ async def new_releases_handler(message: types.Message):
     if not await check_subscription(message.from_user.id):
         return await message.answer(subscribe_text, reply_markup=subscribe_kb)
 
-    await show_new_releases_effect(message)  # 👈 Додано ефект очікування
+    # ⬇️ Оновлення Google Таблиці перед виводом новинок
+    data.clear()
+    data.extend(sheet.get_all_records())
+
+    await show_new_releases_effect(message)  # 👈 Ефект очікування
+
     recent = data[-5:]  # Останні 5 записів
     grouped = defaultdict(list)
     for row in recent:
@@ -172,12 +177,15 @@ async def new_releases_handler(message: types.Message):
         await message.answer(f"🆕 *{title}*\nОбери серію:", reply_markup=kb, parse_mode="Markdown")
 
 
-
 from urllib.parse import urlparse
 
 
 @dp.message()
 async def search_logic(message: types.Message):
+    # ⬇️ Оновлення Google Sheets перед пошуком
+    data.clear()
+    data.extend(sheet.get_all_records())
+
     skip_texts = ["Пошук🔍", "Список серіалів📽", "За жанром", "Мультики👧", "Фільми", "Запросити друга🤜🤛", "📅 Новинки"]
 
     if message.text in skip_texts:
@@ -205,7 +213,8 @@ async def search_logic(message: types.Message):
 
     for title, items in grouped.items():
         kb = InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text=item["Серія"], callback_data=f"send_video|{item['Посилання']}")] for item in items
+            [InlineKeyboardButton(text=item["Серія"], callback_data=f"send_video|{item['Посилання']}")]
+            for item in items
         ])
         await message.answer(f"🆕 *{title}*\nОбери серію:", reply_markup=kb, parse_mode="Markdown")
 
